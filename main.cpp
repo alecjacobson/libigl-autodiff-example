@@ -1,34 +1,48 @@
 #include <igl/opengl/glfw/Viewer.h>
 
+#include <igl/centroid.h>
+#include <Eigen/Geometry>
+
+
+#include <autodiff/reverse/var.hpp>
+#include <autodiff/reverse/var/eigen.hpp>
+
 int main(int argc, char *argv[])
 {
-  // Inline mesh of a cube
-  const Eigen::MatrixXd V= (Eigen::MatrixXd(8,3)<<
-    0.0,0.0,0.0,
-    0.0,0.0,1.0,
-    0.0,1.0,0.0,
-    0.0,1.0,1.0,
-    1.0,0.0,0.0,
-    1.0,0.0,1.0,
-    1.0,1.0,0.0,
-    1.0,1.0,1.0).finished();
-  const Eigen::MatrixXi F = (Eigen::MatrixXi(12,3)<<
-    0,6,4,
-    0,2,6,
-    0,3,2,
-    0,1,3,
-    2,7,6,
-    2,3,7,
-    4,6,7,
-    4,7,5,
-    0,4,5,
-    0,5,1,
-    1,5,7,
-    1,7,3).finished();
+  // Read mesh from argv[1] to V,F
+  Eigen::MatrixXd V;
+  Eigen::MatrixXi F;
+  // read ../decimated-knight.off or argv[1]
+  igl::read_triangle_mesh(
+      argc>1?argv[1]:"../decimated-knight.off", V, F);
 
-  // Plot the mesh
+  // Create autodiff variables of mesh vertex positions
+  autodiff::MatrixXvar U = V.cast<autodiff::var>();
+  // f = total surface area
+  autodiff::VectorXvar A;
+  igl::doublearea(U, F, A);
+  autodiff::var f = A.sum()/2.0;
+
+  // Compute the gradient of f with respect to U into a matrix same size as U
+  Eigen::MatrixXd dfdU;
+  {
+    // Autodiff requires variables to be put into a vector
+    autodiff::VectorXvar U_vec = autodiff::VectorXvar{U.reshaped()};
+    Eigen::VectorXd dfdU_vec = gradient(f, U_vec);
+    dfdU = dfdU_vec.reshaped(U.rows(), U.cols());
+  }
+
+
   igl::opengl::glfw::Viewer viewer;
   viewer.data().set_mesh(V, F);
   viewer.data().set_face_based(true);
+  // Draw gradients as little white lines from each vertex
+  const double scale = 
+    0.1 * 
+    (V.colwise().maxCoeff()-V.colwise().minCoeff()).norm()/
+    dfdU.rowwise().norm().maxCoeff();
+  viewer.data().add_edges(V,(V + dfdU*scale).eval(), Eigen::RowVector3d(1,1,1) );
+  viewer.data().line_width = 1;
   viewer.launch();
 }
+
