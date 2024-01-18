@@ -1,24 +1,21 @@
+#include <igl/doublearea.h>
 #include <igl/opengl/glfw/Viewer.h>
-
-#include <igl/centroid.h>
-#include <Eigen/Geometry>
-
 
 #include <autodiff/reverse/var.hpp>
 #include <autodiff/reverse/var/eigen.hpp>
 
 int main(int argc, char *argv[])
 {
-  // Read mesh from argv[1] to V,F
+  // read ../decimated-knight.off or argv[1]
   Eigen::MatrixXd V;
   Eigen::MatrixXi F;
-  // read ../decimated-knight.off or argv[1]
   igl::read_triangle_mesh(
       argc>1?argv[1]:"../decimated-knight.off", V, F);
 
   // Create autodiff variables of mesh vertex positions
   autodiff::MatrixXvar U = V.cast<autodiff::var>();
-  // f = total surface area
+
+  // Compute f = total surface area using our autodiff types
   autodiff::VectorXvar A;
   igl::doublearea(U, F, A);
   autodiff::var f = A.sum()/2.0;
@@ -32,11 +29,12 @@ int main(int argc, char *argv[])
     dfdU = dfdU_vec.reshaped(U.rows(), U.cols());
   }
 
-
+  // Draw the mesh
   igl::opengl::glfw::Viewer viewer;
   viewer.data().set_mesh(V, F);
   viewer.data().set_face_based(true);
-  // Draw gradients as little white lines from each vertex
+
+  // Draw dfdU as little white lines from each vertex
   const double scale = 
     0.1 * 
     (V.colwise().maxCoeff()-V.colwise().minCoeff()).norm()/
