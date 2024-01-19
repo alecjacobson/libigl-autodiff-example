@@ -14,8 +14,9 @@ igl_include(glfw)
 
 # autodiff.github.io
 include(FetchContent)
-set(EIGEN3_FOUND ON CACHE BOOL "" FORCE)
-set(Eigen3_FOUND ON CACHE BOOL "" FORCE)
+
+# Fetch Eigen3 provided by libigl
+get_target_property(Eigen3_INCLUDE_DIR igl::core INTERFACE_INCLUDE_DIRECTORIES)
 
 set(AUTODIFF_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(AUTODIFF_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -36,4 +37,5 @@ add_executable(${PROJECT_NAME} ${SRC_FILES})
 target_link_libraries(${PROJECT_NAME} PUBLIC 
   igl::glfw
   autodiff
+  Eigen3::Eigen
   )
