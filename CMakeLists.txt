@@ -18,6 +18,10 @@ include(FetchContent)
 # Fetch Eigen3 provided by libigl
 get_target_property(Eigen3_DIR Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
 message(STATUS "Eigen3_DIR : ${Eigen3_DIR}")
+set(Eigen3_CMAKE_DIR "${Eigen3_DIR}/cmake")
+# add Eigen3_CMAKE_DIR to cmake module path
+list(APPEND CMAKE_MODULE_PATH ${Eigen3_CMAKE_DIR})
+
 
 set(AUTODIFF_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(AUTODIFF_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
