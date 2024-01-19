@@ -17,8 +17,8 @@ include(FetchContent)
 
 # Fetch Eigen3 provided by libigl
 #get_target_property(Eigen3_INCLUDE_DIR Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
-set(Eigen3_DIR "${CMAKE_BINARY_DIR}/_deps/eigen-src/cmake/")
 set(EIGEN3_INCLUDE_DIR "${CMAKE_BINARY_DIR}/_deps/eigen-src/")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}/_deps/eigen-src/cmake/")
 
 
 set(AUTODIFF_BUILD_TESTS OFF CACHE BOOL "" FORCE)
