@@ -15,9 +15,18 @@ igl_include(glfw)
 # autodiff.github.io
 include(FetchContent)
 
-# I wish I could use something automated like this to get EIGEN3_INCLUDE_DIR
-#get_target_property(Eigen3_INCLUDE_DIR Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
-set(EIGEN3_INCLUDE_DIR "${FETCHCONTENT_BASE_DIR}/eigen-src/")
+# Get the Eigen3 include directory from the Eigen3::Eigen target
+get_target_property(EIGEN3_INCLUDE_DIR_TMP Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
+
+# Use file(GENERATE ...) to resolve the generator expression at build-system generation time
+file(GENERATE OUTPUT "${CMAKE_BINARY_DIR}/eigen3_include_dir.txt" CONTENT "${EIGEN3_INCLUDE_DIR_TMP}")
+
+# Execute process to force CMake to generate the file before continuing
+execute_process(COMMAND ${CMAKE_COMMAND} -E cmake_echo_color --cyan "Resolving Eigen3 include directory")
+
+# Read the resolved path from the file
+file(READ "${CMAKE_BINARY_DIR}/eigen3_include_dir.txt" EIGEN3_INCLUDE_DIR)
+
 list(APPEND CMAKE_MODULE_PATH "${EIGEN3_INCLUDE_DIR}/cmake/")
 
 
