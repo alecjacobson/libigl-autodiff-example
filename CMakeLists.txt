@@ -20,6 +20,8 @@ get_target_property(Eigen3_INCLUDE_DIR Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORI
 message(STATUS "Eigen3_INCLUDE_DIR: ${Eigen3_INCLUDE_DIR}")
 set(Eigen3_DIR "${Eigen3_INCLUDE_DIR}/cmake")
 message(STATUS "Eigen3_DIR : ${Eigen3_DIR}")
+set(EIGEN3_FOUND TRUE)
+set(Eigen3_FOUND TRUE)
 # why doesn't this work?
 list(APPEND CMAKE_MODULE_PATH ${Eigen3_DIR})
 
