@@ -16,7 +16,8 @@ igl_include(glfw)
 include(FetchContent)
 
 # Fetch Eigen3 provided by libigl
-get_target_property(Eigen3_INCLUDE_DIR igl::core INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(Eigen3_INCLUDE_DIR Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
+message(STATUS "Eigen3_INCLUDE_DIR: ${Eigen3_INCLUDE_DIR}")
 
 set(AUTODIFF_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(AUTODIFF_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
