@@ -15,10 +15,10 @@ igl_include(glfw)
 # autodiff.github.io
 include(FetchContent)
 
-# Fetch Eigen3 provided by libigl
+# I wish I could use something automated like this to get EIGEN3_INCLUDE_DIR
 #get_target_property(Eigen3_INCLUDE_DIR Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
-set(EIGEN3_INCLUDE_DIR "${CMAKE_BINARY_DIR}/_deps/eigen-src/")
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}/_deps/eigen-src/cmake/")
+set(EIGEN3_INCLUDE_DIR "${FETCHCONTENT_BASE_DIR}/eigen-src/")
+list(APPEND CMAKE_MODULE_PATH "${EIGEN3_INCLUDE_DIR}/cmake/")
 
 
 set(AUTODIFF_BUILD_TESTS OFF CACHE BOOL "" FORCE)
